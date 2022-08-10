@@ -1,25 +1,78 @@
 from flask import Flask, g, Response, make_response, request
-from datetime import datetime, date
+from flask import session
+from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
 app.debug = True
-app.config['SERVER_NAME'] = 'local.com:5001'
+app.config.update(
+    SECRET_KEY='X1243yRH!mMwf',
+    SESSION_COOKIE_NAME='pyweb_flask_session',
+    PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days  cf. minutes=30
+)
 
-@app.route('/sd')
-def helloworld_local():
-  return "Hello local.com"
+@app.route('/wc')
+def wc():
+  key = request.args.get('key')
+  val = request.args.get('val')
+  res = Response("SET COOKIE")
+  res.set_cookie(key, val)
+  session['Token'] = '123X'
+  return make_response(res)
 #def
 
-@app.route("/sd", subdomain='blog')
-def helloworld_blog():
-  return "Hello blog.local.com"
+@app.route('/rc')
+def rc():
+  key = request.args.get('key') #token
+  val = request.cookies.get(key)
+  return "cookie['" + key + "] = " + val + " , " + session.get('Token')
 #def
+
+@app.route('/delsess')
+def delsses():
+  if session.get('Token'):
+    del session['Token']
+  #if
+  return "Session이 삭제되었습니다."
+#def
+
+@app.route('/reqenv')
+def reqenv():
+  #print(">> is_xhr", request.is_xhr)
+  #print(">> json = ", request.get_json())
+  return ('REQUEST_METHOD: %(REQUEST_METHOD) s <br>'
+        'SCRIPT_NAME: %(SCRIPT_NAME) s <br>'
+        'PATH_INFO: %(PATH_INFO) s <br>'
+        'QUERY_STRING: %(QUERY_STRING) s <br>'
+        'SERVER_NAME: %(SERVER_NAME) s <br>'
+        'SERVER_PORT: %(SERVER_PORT) s <br>'
+        'SERVER_PROTOCOL: %(SERVER_PROTOCOL) s <br>'
+        'wsgi.version: %(wsgi.version) s <br>'
+        'wsgi.url_scheme: %(wsgi.url_scheme) s <br>'
+        'wsgi.input: %(wsgi.input) s <br>'
+        'wsgi.errors: %(wsgi.errors) s <br>'
+        'wsgi.multithread: %(wsgi.multithread) s <br>'
+        'wsgi.multiprocess: %(wsgi.multiprocess) s <br>'
+        'wsgi.run_once: %(wsgi.run_once) s') % request.environ
+#def
+
+# app.config['SERVER_NAME'] = 'local.com:5001'
+
+# @app.route('/sd')
+# def helloworld_local():
+#   return "Hello local.com"
+# #def
+
+# @app.route("/sd", subdomain='blog')
+# def helloworld_blog():
+#   return "Hello blog.local.com"
+# #def
 
 #request 처리 용 함수
 def ymd(fmt):
   def trans(date_str):
     return datetime.strptime(date_str, fmt)
   #def
+  return trans #함수를 리턴함, .get('date' 가 ate_str로 들어감
 #def
 
 #http://local.com:5001/dt?date=1968-02-15
@@ -69,7 +122,6 @@ def rp():
   q = request.args.getlist('q')
   return "q= %s" % str(q)
 #def
-
 
 @app.route('/tidtest/<tid>')
 def tidtest(tid):
