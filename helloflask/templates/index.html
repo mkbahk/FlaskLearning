@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jinja Test Page</title>
+</head>
+<body>
+  <div>Jinja Test : {{title}} - {{mu}}</div>
+  <hr>
+    {{"abc {ef} ghi"}}
+  <hr>
+    {{ '}}>> <strong>Strong1</strong>' | escape }}
+  <hr>
+    {{ "<strong>Strong2</strong>" | safe}}
+  <hr>
+    {{ "<strong>Strong3</strong>" | striptags}}
+  <hr>
+    {% raw %}
+      {% if True  %}
+        TTT
+      {% endif %}
+    {% endraw %}
+  <hr>
+  <ul>
+    {% for item in lst %}
+        <li>{{item[0]}}: {{item[1]}}</li>
+    {% endfor %}
+  </ul>
+  <hr>
+  <pre>
+    ttt 한글
+    {%- if True -%}
+      TTT
+    {%- endif -%}qqq
+  </pre>
+</body>
+</html>

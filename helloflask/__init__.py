@@ -1,15 +1,32 @@
 from flask import Flask, g, Response, make_response, request
-from flask import session
+from flask import session, render_template, Markup
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
 app.debug = True
+#app.jinja_env.trim_blocks = True
+
 app.config.update(
     SECRET_KEY='X1243yRH!mMwf',
     SESSION_COOKIE_NAME='pyweb_flask_session',
     PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days  cf. minutes=30
 )
 
+@app.route("/tmpl")
+def tmpl():
+  tit = Markup("<strong>HelloTitle</strong>")
+  mu = Markup("<h1>iii = <i>%s</i></h1>")
+  h = mu % "Italic"
+  
+  print(">>>>>>>>>", type(tit))
+  print("h=", h)
+  
+  lst = [ ("만남1", "김건모"), ("만남2", "노사연") ]
+  
+  return render_template('index.html', title=tit, mu=h, lst=lst)
+#def
+
+  
 @app.route('/wc')
 def wc():
   key = request.args.get('key')
